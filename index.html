@@ -1,1 +1,151 @@
+<!doctype html>
+<html lang="pt">
+    <cabeça>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="largura=largura-do-dispositivo, escala-inicial=1" />
+        <meta nome="cor-do-tema" conteúdo="#000000" />
+        <meta name="description" content="Um produto de emergent.sh" />
+        <!--
+      manifest.json fornece metadados usados quando seu aplicativo da web é instalado em um
+      dispositivo móvel ou desktop do usuário. Consulte https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+        <!--
+      Observe o uso de nas tags acima.
+      Ele será substituído pelo URL da pasta `public` durante a compilação.
+      Somente arquivos dentro da pasta `public` podem ser referenciados no HTML.
 
+      Ao contrário de "/favicon.ico" ou "favicon.ico", "/favicon.ico" irá
+      funcionar corretamente tanto com roteamento do lado do cliente quanto com uma URL pública não raiz.
+      Aprenda como configurar uma URL pública não root executando `npm run build`.
+    -->
+        <title>Emergent | Aplicativo Fullstack</title>
+    <script defer src="/static/js/bundle.js"></script></head>
+    <corpo>
+        <noscript>Você precisa habilitar o JavaScript para executar este aplicativo.</noscript>
+        <div id="raiz"></div>
+        <!--
+      Este arquivo HTML é um modelo.
+      Se você abrir diretamente no navegador, verá uma página em branco.
+
+      Você pode adicionar webfonts, meta tags ou análises a este arquivo.
+      A etapa de construção colocará os scripts agrupados na tag <body>.
+
+      Para iniciar o desenvolvimento, execute `npm start` ou `yarn start`.
+      Para criar um pacote de produção, use `npm run build` ou `yarn build`.
+    -->
+        <um
+            id="emblema-emergente"
+            alvo="_em branco"
+            href="https://app.emergent.sh/?utm_source=emergent-badge"
+            estilo="
+                exibição: flex !importante;
+                alinhar-itens: centro !importante;
+                posição: fixa !importante;
+                inferior: 20px;
+                direita: 20px;
+                decoração de texto: nenhuma;
+                preenchimento: 6px 10px;
+                família de fontes: -apple-system, BlinkMacSystemFont,
+                    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+                    "Open Sans", "Helvetica Neue",
+                    sem serifa !importante;
+                tamanho da fonte: 12px !importante;
+                z-index: 9999 !importante;
+                caixa-sombra: 0 2px 8px rgba(0, 0, 0, 0.15) !importante;
+                raio da borda: 8px !importante;
+                cor de fundo: #ffffff !importante;
+                borda: 1px sólido rgba(255, 255, 255, 0,25) !importante;
+            "
+        >
+            <div
+                estilo="exibir: flex; direção-flex: linha; alinhar-itens: centro"
+            >
+                <img
+                    estilo="largura: 20px; altura: 20px; margem direita: 8px"
+                    src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4"
+                />
+                <p
+                    estilo="
+                        cor: #000000;
+                        família de fontes: -apple-system, BlinkMacSystemFont,
+                            "Segoe UI", Roboto, Oxygen, Ubuntu,
+                            Cantarell, "Open Sans",
+                            "Helvetica Neue", sem serifa !importante;
+                        tamanho da fonte: 12px !importante;
+                        alinhar-itens: centro;
+                        margem inferior: 0;
+                    "
+                >
+                    Feito com Emergent
+                </p>
+            </div>
+        </a>
+        <script>
+            !(função (t, e) {
+                var o, n, p, r;
+                e.__SV ||
+                    ((window.posthog = e),
+                    (e._i = []),
+                    (e.init = função (i, s, a) {
+                        função g(t, e) {
+                            var o = e.split(".");
+                            2 == o.length && ((t = t[o[0]]), (e = o[1])),
+                                (t[e] = função () {
+                                    t.push(
+                                        [e].concat(
+                                            Matriz.protótipo.fatia.chamada(
+                                                argumentos,
+                                                0,
+                                            ),
+                                        ),
+                                    );
+                                });
+                        }
+                        ((p = t.createElement("script")).tipo =
+                            "texto/javascript"),
+                            (p.crossOrigin = "anônimo"),
+                            (p.async = !0),
+                            (p.src =
+                                s.api_host.replace(
+                                    ".i.posthog.com",
+                                    "-assets.i.posthog.com",
+                                ) + "/static/array.js"),
+                            (r =
+                                t.getElementsByTagName(
+                                    "roteiro",
+                                )[0]).parentNode.insertBefore(p, r);
+                        var u = e;
+                        para (
+                            vazio 0 !== a ? (u = e[a] = []) : (a = "posthog"),
+                                u.pessoas = u.pessoas || [],
+                                u.toString = função (t) {
+                                    var e = "posthog";
+                                    retornar (
+                                        "posthog" !== a && (e += "." + a),
+                                        t || (e += " (esboço)"),
+                                        e
+                                    );
+                                },
+                                u.people.toString = função () {
+                                    retornar u.toString(1) + ".people (stub)";
+                                },
+                                o =
+                                    "init me ws ys ps bs capture je Di ks register register_once register_for_session unregister unregister_for_session Ps getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatureFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty Es $s createPersonProfile É opt_in_capturing opt_out_capturing optou_in_capturing optou_out_capturing clear_opt_in_out_capturing Ss debug xs getPageViewId captureTraceFeedback captureTraceMetric".split(
+                                        " ",
+                                    ),
+                                n = 0;
+                            n < o.comprimento;
+                            n++
+                        )
+                            g(u, o[n]);
+                        e._i.push([i, s, a]);
+                    }),
+                    (e.__SV = 1));
+            })(documento, janela.posthog || []);
+            posthog.init("phc_yJW1VjHGGwmCbbrtczfqqNxgBDbhlhOWcdzcIJEOTFE", {
+                api_host: "https://us.i.posthog.com",
+                person_profiles: "identified_only", // ou 'always' para criar perfis para usuários anônimos também
+            });
+        </script>
+    </corpo>
+  </html>
