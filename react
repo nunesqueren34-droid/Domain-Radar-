@@ -1,0 +1,60 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+
+const API = process.env.REACT_APP_BACKEND_URL + "/api";
+
+function App() {
+  const [domain, setDomain] = useState("");
+  const [result, setResult] = useState(null);
+  const [platforms, setPlatforms] = useState([]);
+
+  useEffect(() => {
+    fetchPlatforms();
+  }, []);
+
+  const fetchPlatforms = async () => {
+    const res = await axios.get(`${API}/platforms`);
+    setPlatforms(res.data);
+  };
+
+  const checkDomain = async () => {
+    if (!domain) return alert("Digite um domínio");
+    const res = await axios.post(`${API}/check-domain`, { domain });
+    setResult(res.data);
+  };
+
+  return (
+    <div className="p-8">
+      <h1 className="text-2xl mb-4">Domain Radar</h1>
+      <input
+        placeholder="exemplo.com"
+        value={domain}
+        onChange={(e) => setDomain(e.target.value)}
+        className="border p-2 mr-2"
+      />
+      <button onClick={checkDomain} className="bg-blue-500 text-white p-2">
+        Verificar
+      </button>
+
+      {result && (
+        <div className="mt-4 p-4 border">
+          <p>Domínio: {result.domain}</p>
+          <p>Status: {result.available ? "Disponível ✅" : "Indisponível ❌"}</p>
+        </div>
+      )}
+
+      <h2 className="mt-8 text-xl">Plataformas</h2>
+      <ul>
+        {platforms.map((p) => (
+          <li key={p.id}>
+            <a href={p.url.replace("{}", domain)} target="_blank" rel="noreferrer">
+              {p.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default App;
