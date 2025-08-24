@@ -1,99 +1,208 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Domain Radar - Plataforma</title>
-    <style>
-        /* ===== Estilo base ===== */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #fafafa;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+            import React, { useState, useEffect } from "react";
+import "./App.css";
+import axios from "axios";
+import { Search, Globe, Plus, Badge } from "lucide-react";
+import { Button } from "./components/ui/button";
+import { Input } from "./components/ui/input";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./components/ui/dialog";
+import { Label } from "./components/ui/label";
+import { toast } from "./hooks/use-toast";
+import { Toaster } from "./components/ui/toaster";
 
-        header {
-            width: 100%;
-            background-color: #222;
-            color: white;
-            padding: 15px 0;
-            text-align: center;
-            font-size: 20px;
-        }
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
-        .container {
-            text-align: center;
-            max-width: 600px;
-            margin: 30px auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
+function App() {
+  const [searchDomain, setSearchDomain] = useState("");
+  const [searchResult, setSearchResult] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
+  const [platforms, setPlatforms] = useState([]);
+  const [showAddPlatform, setShowAddPlatform] = useState(false);
+  const [newPlatform, setNewPlatform] = useState({ name: "", url: "", logo_url: "" });
+  const [domainHistory, setDomainHistory] = useState([]);
 
-        img {
-            max-width: 120px;
-            margin-bottom: 20px;
-        }
+  useEffect(() => {
+    fetchPlatforms();
+    fetchDomainHistory();
+  }, []);
 
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-        }
+  const fetchPlatforms = async () => {
+    try {
+      const response = await axios.get(`${API}/platforms`);
+      setPlatforms(response.data);
+    } catch (error) {
+      console.error("Error fetching platforms:", error);
+      toast({ title: "Erro", description: "Falha ao carregar plataformas", variant: "destructive" });
+    }
+  };
 
-        p {
-            color: #555;
-            margin-bottom: 20px;
-        }
+  const fetchDomainHistory = async () => {
+    try {
+      const response = await axios.get(`${API}/domain-history`);
+      setDomainHistory(response.data.slice(0, 10));
+    } catch (error) {
+      console.error("Error fetching domain history:", error);
+    }
+  };
 
-        .botao {
-            padding: 12px 25px;
-            margin: 5px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+  const handleSearch = async () => {
+    if (!searchDomain.trim()) {
+      toast({ title: "Atenção", description: "Por favor, digite um domínio para pesquisar", variant: "destructive" });
+      return;
+    }
+    setIsSearching(true);
+    try {
+      const response = await axios.post(`${API}/check-domain`, { domain: searchDomain.trim() });
+      setSearchResult(response.data);
+      fetchDomainHistory();
+    } catch (error) {
+      console.error("Error checking domain:", error);
+      toast({ title: "Erro", description: "Falha ao verificar domínio", variant: "destructive" });
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
-        .botao:hover {
-            background-color: #0056b3;
-        }
+  const handleAddPlatform = async () => {
+    if (!newPlatform.name || !newPlatform.url) {
+      toast({ title: "Atenção", description: "Nome e URL são obrigatórios", variant: "destructive" });
+      return;
+    }
+    try {
+      await axios.post(`${API}/platforms`, newPlatform);
+      setNewPlatform({ name: "", url: "", logo_url: "" });
+      setShowAddPlatform(false);
+      fetchPlatforms();
+      toast({ title: "Sucesso", description: "Plataforma adicionada com sucesso" });
+    } catch (error) {
+      console.error("Error adding platform:", error);
+      toast({ title: "Erro", description: "Falha ao adicionar plataforma", variant: "destructive" });
+    }
+  };
 
-        footer {
-            margin-top: 30px;
-            font-size: 12px;
-            color: #777;
-        }
-    </style>
-</head>
-<body>
-    <header>Domain Radar</header>
+  const handleDeletePlatform = async (platformId) => {
+    try {
+      await axios.delete(`${API}/platforms/${platformId}`);
+      fetchPlatforms();
+      toast({ title: "Sucesso", description: "Plataforma removida com sucesso" });
+    } catch (error) {
+      console.error("Error deleting platform:", error);
+      toast({ title: "Erro", description: "Falha ao remover plataforma", variant: "destructive" });
+    }
+  };
 
-    <div class="container">
-        <!-- Logo do Emergent -->
-        <img src="https://domain-radar.preview.emergentagent.com/favicon.ico" alt="Logo da plataforma">
+  const formatPlatformUrl = (url, domain) => {
+    return url.includes("{}") ? url.replace("{}", domain) : `${url}?domain=${domain}`;
+  };
 
-        <h1>Bem-vindo à sua Plataforma</h1>
-        <p>Esta é uma versão simples da plataforma do Emergent. Interaja usando os botões abaixo:</p>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <Toaster />
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-3">
+          <Globe className="h-8 w-8 text-blue-600" />
+          <h1 className="text-2xl font-bold text-gray-900">Domain Radar</h1>
+        </div>
+      </header>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center mb-12">
+          <div className="relative overflow-hidden rounded-2xl mb-8">
+            <img src="https://images.pexels.com/photos/4160092/pexels-photo-4160092.jpeg" alt="Domain Search" className="w-full h-64 object-cover" />
+            <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white text-center">
+              <h2 className="text-4xl font-bold mb-4">Encontre o Domínio Perfeito</h2>
+              <p className="text-xl opacity-90">Verifique a disponibilidade e registre seu domínio hoje mesmo</p>
+            </div>
+          </div>
+        </div>
 
-        <!-- Botões interativos -->
-        <button class="botao" onclick="alert('Você clicou em Domain Lookup!')">Domain Lookup</button>
-        <button class="botao" onclick="alert('Você clicou em Analytics!')">Analytics</button>
-        <button class="botao" onclick="alert('Você clicou em Settings!')">Settings</button>
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2"><Search className="h-5 w-5" /> Verificar Disponibilidade</CardTitle>
+            <CardDescription>Digite o nome do domínio que deseja verificar</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-2">
+              <Input placeholder="exemplo.com" value={searchDomain} onChange={(e) => setSearchDomain(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleSearch()} className="flex-1" />
+              <Button onClick={handleSearch} disabled={isSearching}>{isSearching ? "Verificando..." : "Verificar"}</Button>
+            </div>
+            {searchResult && (
+              <div className="mt-6 p-4 rounded-lg border bg-gray-50">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold">Resultado da Pesquisa</h3>
+                  <Badge variant={searchResult.available ? "default" : "destructive"}>{searchResult.available ? "Disponível" : "Indisponível"}</Badge>
+                </div>
+                <p className="text-gray-600 mb-4">Domínio: <strong>{searchResult.domain}</strong></p>
+                {searchResult.available && <p className="text-green-600 font-medium mb-4">✅ Este domínio parece estar disponível para registro!</p>}
+                {!searchResult.available && <p className="text-red-600 font-medium mb-4">❌ Este domínio já está registrado.</p>}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <div className="mb-8 p-8 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg text-center">
+          <p className="text-gray-500 font-medium">Espaço para Anúncio AdSense</p>
+          <p className="text-sm text-gray-400">728x90 ou Banner Responsivo</p>
+        </div>
+
+        <Card className="mb-8">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Plataformas de Registro</CardTitle>
+                <CardDescription>Registre seu domínio nas melhores plataformas</CardDescription>
+              </div>
+              <Dialog open={showAddPlatform} onOpenChange={setShowAddPlatform}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm"><Plus className="h-4 w-4 mr-2" /> Adicionar</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]" onOpenAutoFocus={(e) => e.preventDefault()}>
+                  <DialogHeader>
+                    <DialogTitle>Adicionar Nova Plataforma</DialogTitle>
+                    <DialogDescription>Adicione uma nova plataforma de registro de domínios</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="name">Nome da Plataforma</Label>
+                      <Input id="name" value={newPlatform.name} onChange={(e) => setNewPlatform({...newPlatform, name: e.target.value})} placeholder="Ex: MinhaPlataforma" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="url">URL (use {} para substituir o domínio)</Label>
+                      <Input id="url" value={newPlatform.url} onChange={(e) => setNewPlatform({...newPlatform, url: e.target.value})} placeholder="https://exemplo.com/buscar?domain={}" />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="logo">URL do Logo (opcional)</Label>
+                      <Input id="logo" value={newPlatform.logo_url} onChange={(e) => setNewPlatform({...newPlatform, logo_url: e.target.value})} placeholder="https://exemplo.com/logo.png" />
+                    </div>
+                  </div>
+                  <DialogFooter className="gap-2">
+                    <Button type="button" variant="outline" onClick={() => setShowAddPlatform(false)}>Cancelar</Button>
+                    <Button type="button" onClick={handleAddPlatform} className="relative z-50">Adicionar</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {platforms.map((platform) => (
+                <Card key={platform.id} className="hover:shadow-lg transition-shadow p-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h4 className="font-semibold">{platform.name}</h4>
+                      <p className="text-sm text-gray-500">{platform.url}</p>
+                    </div>
+                    <Button variant="destructive" size="sm" onClick={() => handleDeletePlatform(platform.id)}>Remover</Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </main>
     </div>
+  );
+}
 
-    <footer>
+export default App;
         
-    </footer>
-
-    <script>
-        console.log("Plataforma carregada com sucesso!");
-    </script>
-</body>
-</html>
